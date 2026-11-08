@@ -72,6 +72,8 @@ In the Claude desktop app, click **+** next to the prompt box, then **Plugins**,
 
 ## Use
 
+![Autoroute commands in the Claude Code autocomplete](docs/images/commands.png)
+
 | Command | What it does |
 | --- | --- |
 | `/autoroute-on` | Route this conversation from the next message on. Also releases models or efforts you chose by hand. |
