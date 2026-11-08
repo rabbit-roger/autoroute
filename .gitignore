@@ -1,0 +1,5 @@
+node_modules/
+build-test/
+*.sqlite*
+*.log
+.DS_Store

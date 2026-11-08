@@ -1,0 +1,17 @@
+{
+  "name": "autoroute",
+  "owner": {
+    "name": "rabbit-roger"
+  },
+  "metadata": {
+    "description": "Autoroute: automatic Claude model and effort selection for Claude Code.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "autoroute",
+      "source": "./plugin",
+      "description": "Picks the Claude model and effort for each task, with a local cost dashboard."
+    }
+  ]
+}

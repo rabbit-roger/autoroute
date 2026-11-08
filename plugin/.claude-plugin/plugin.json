@@ -1,0 +1,18 @@
+{
+  "name": "autoroute",
+  "version": "0.1.0",
+  "description": "Picks the Claude model and effort for each task. Needs the local Autoroute service: npm install -g github:rabbit-roger/autoroute && autoroute setup",
+  "author": { "name": "rabbit-roger" },
+  "homepage": "https://github.com/rabbit-roger/autoroute",
+  "repository": "https://github.com/rabbit-roger/autoroute",
+  "license": "MIT",
+  "userConfig": {
+    "defaultRouting": {
+      "type": "string",
+      "title": "Routing in new conversations",
+      "description": "off: routing starts only after /autoroute-on in a conversation. on: every new conversation starts with routing on.",
+      "options": ["off", "on"],
+      "default": "off"
+    }
+  }
+}

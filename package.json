@@ -1,0 +1,24 @@
+{
+  "name": "autoroute",
+  "version": "0.1.0",
+  "description": "Picks the Claude model and effort for each Claude Code task, with a local cost dashboard.",
+  "license": "MIT",
+  "type": "module",
+  "repository": { "type": "git", "url": "git+https://github.com/rabbit-roger/autoroute.git" },
+  "homepage": "https://github.com/rabbit-roger/autoroute#readme",
+  "bugs": "https://github.com/rabbit-roger/autoroute/issues",
+  "keywords": ["claude", "claude-code", "plugin", "model-routing", "cost"],
+  "engines": { "node": ">=22.13" },
+  "bin": { "autoroute": "dist/src/cli/main.js" },
+  "files": ["dist/src", "web", "config", "README.md", "LICENSE", "NOTICE.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/build.mjs",
+    "test": "npm run build && tsc -p tsconfig.test.json && node --test \"build-test/tests/*.test.js\"",
+    "check": "tsc -p tsconfig.test.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2"
+  }
+}
