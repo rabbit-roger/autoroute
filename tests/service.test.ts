@@ -42,7 +42,7 @@ test('the page icon is served without a key',async()=>{
    assert.equal(r.status,200);
    assert.equal(r.headers.get('content-type'),'image/svg+xml');
   }
- }finally{svc.server.close();rmSync(dir,{recursive:true,force:true});}
+ }finally{await new Promise<void>(r=>svc.server.close(()=>r()));rmSync(dir,{recursive:true,force:true});}
 });
 
 test('bundled defaults install once, refresh a bundled catalog, and never overwrite a custom one or newer prices',async()=>{
