@@ -143,7 +143,9 @@ function chartSpend(events) {
   });
   const marks = count <= 2 ? [...Array(count).keys()] : [0, count - 1];
   for (const i of new Set(marks)) {
-    svg.append(el('text', { x: plot.left + i * slot + slot / 2, y: VH - 6, 'text-anchor': 'middle', class: 'tick' }, bucketLabel(origin + i * span, span)));
+    const edge = count > 1 && i === count - 1 ? 'end' : count > 1 && i === 0 ? 'start' : 'middle';
+    const x = edge === 'end' ? plot.left + plot.w : edge === 'start' ? plot.left : plot.left + i * slot + slot / 2;
+    svg.append(el('text', { x, y: VH - 6, 'text-anchor': edge, class: 'tick' }, bucketLabel(origin + i * span, span)));
   }
   for (const m of models) {
     const item = document.createElement('span');
@@ -233,6 +235,7 @@ const REASONS = {
   'no-confirmed-route': 'No verified model fits this task (for example an image is attached), so the model was left unchanged.',
   'host-version-unsupported': 'This Claude Code version is older than Autoroute supports, so nothing was changed. Update Claude Code.',
   'baseline-capability-unknown': 'The model you were using is not in the confirmed list, so nothing was changed.',
+  classified: 'Autoroute picked the model from the classification of the task alone: its kind of work and its complexity. No other rule changed the choice.',
   observation: 'A request that was only observed, with no routing decision.',
 };
 function chartReasons(events) {
@@ -241,7 +244,8 @@ function chartReasons(events) {
   const counts = new Map();
   for (const e of events) {
     const list = (e.reasons || []).filter(r => !r.startsWith('complexity-') && !r.startsWith('activity-'));
-    for (const r of list.length ? list : ['observation']) counts.set(r, (counts.get(r) || 0) + 1);
+    const fallback = (e.reasons || []).length ? 'classified' : 'observation';
+    for (const r of list.length ? list : [fallback]) counts.set(r, (counts.get(r) || 0) + 1);
   }
   if (!counts.size) {
     const p = document.createElement('p');

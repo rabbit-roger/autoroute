@@ -62,3 +62,4 @@ td:nth-child(1),td:nth-child(3),td:nth-child(4){white-space:nowrap}td:nth-child(
 #connection.ok{color:var(--accent)}
 :root[data-theme=light] .kpi .tip::after,:root[data-theme=light] .reason-row .tip::after,:root[data-theme=light] dialog{box-shadow:0 6px 20px #0002}
 :root[data-theme=light] dialog::backdrop{background:#0006}
+.section-head{flex-wrap:wrap;gap:8px 16px}.section-head h2{white-space:nowrap}

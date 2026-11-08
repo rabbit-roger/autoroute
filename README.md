@@ -2,6 +2,17 @@
 
 Autoroute picks the Claude model and effort level for each task you give Claude Code, so simple questions go to a cheaper, faster model and hard or risky work goes to the strongest one. A local dashboard shows what was routed where and what it cost.
 
+![Autoroute dashboard, dark theme](docs/images/dashboard-dark.png)
+
+<details>
+<summary>Light theme</summary>
+
+![Autoroute dashboard, light theme](docs/images/dashboard-light.png)
+
+</details>
+
+*Screenshots show generated sample data.*
+
 - **Works in the Claude desktop app and the `claude` CLI**, on macOS, Linux and Windows.
 - **Opt-in per conversation.** Nothing changes until you type `/autoroute-on` (or turn on routing for every new conversation in the plugin settings).
 - **Local only.** A small service on `127.0.0.1` keeps the history. No prompts, responses, code or credentials are stored, and nothing is sent anywhere except the one classification call described below.

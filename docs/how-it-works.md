@@ -47,6 +47,7 @@ The classification happens once per task. Follow-up requests in the same task (t
 | `no-confirmed-route` | No verified model fits this task (for example an image is attached), so the model was left unchanged. |
 | `host-version-unsupported` | This Claude Code version is older than Autoroute supports, so nothing was changed. Update Claude Code. |
 | `baseline-capability-unknown` | The model you were using is not in the confirmed list, so nothing was changed. |
+| `classified` | Autoroute picked the model from the classification of the task alone: its kind of work and its complexity. No other rule changed the choice. |
 | `observation` | A request that was only observed, with no routing decision. |
 
 The dashboard hides two technical reasons that are always present on routed requests: `complexity-N` (the classifier's score) and `activity-X` (the kind of work).
