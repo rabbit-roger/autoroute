@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtempSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {registerAdapter,type Bridge} from '../src/adapters/claude.js';
+import {registerAdapter,folderName,type Bridge} from '../src/adapters/claude.js';
 import {Store} from '../src/service/store.js';
 import {features,validCapabilities} from '../src/core/policy.js';
 import {caps} from './fixtures.js';
@@ -79,4 +79,25 @@ test('routing turns itself off after the host twice answers with a different mod
   assert.equal(h.store.session('claude:s1').enabled,false);
   assert.ok(h.logs.some(l=>/turned routing off.*some-other-model/.test(l)));
  }finally{h.close();}
+});
+
+test('only the last folder of a project path is kept, for / and Windows \\ paths',()=>{
+ assert.equal(folderName('/Users/me/work/my repo/'),'my_repo');
+ assert.equal(folderName('Z:\\autoroute\\repo'),'repo');
+ assert.equal(folderName('C:\\Users\\me\\work\\my repo\\'),'my_repo');
+ assert.equal(folderName('\\\\server\\share\\proj'),'proj');
+ assert.equal(folderName(''),undefined);assert.equal(folderName(undefined),undefined);
+});
+
+test('on Windows the plugin finds the service under USERPROFILE even when HOME is set',async()=>{
+ async function readPath(vars:Record<string,string>){
+  const reads:string[]=[],handlers=new Map<string,Function>();
+  registerAdapter(((name:string,h:Function)=>{handlers.set(name,h);return {catch:()=>undefined};}) as any);
+  const bridge:any={plugin:{root:'x'},fs:{read:async(p:string)=>{reads.push(p);throw new Error('stop here');}},env:{get:async(n:string)=>vars[n]},session:{id:async()=>'w1',version:async()=>({version:'2.1.317'})},command:{register:async()=>{}},ui:{log:()=>{}}};
+  await handlers.get('session.start')!(bridge,{},async(e:any)=>e);return reads[0];
+ }
+ assert.equal(await readPath({OS:'Windows_NT',HOME:'C:\\msys64\\home\\me',USERPROFILE:'C:\\Users\\me'}),'C:\\Users\\me/.autoroute/connection.json');
+ assert.equal(await readPath({OS:'Windows_NT',HOME:'C:\\Users\\me'}),'C:\\Users\\me/.autoroute/connection.json');
+ assert.equal(await readPath({HOME:'/home/me',USERPROFILE:'/elsewhere'}),'/home/me/.autoroute/connection.json');
+ assert.equal(await readPath({OS:'Windows_NT',HOME:'C:\\a',USERPROFILE:'C:\\b',AUTOROUTE_DATA_DIR:'D:\\data\\'}),'D:\\data/connection.json');
 });

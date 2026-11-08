@@ -1,7 +1,7 @@
 {
   "name": "autoroute",
   "version": "0.1.0",
-  "description": "Picks the Claude model and effort for each task. Needs the local Autoroute service: npm install -g github:rabbit-roger/autoroute && autoroute setup",
+  "description": "Picks the Claude model and effort for each task. Needs the local Autoroute service: npm install -g https://github.com/rabbit-roger/autoroute/archive/refs/heads/main.tar.gz && autoroute setup",
   "author": { "name": "rabbit-roger" },
   "homepage": "https://github.com/rabbit-roger/autoroute",
   "repository": "https://github.com/rabbit-roger/autoroute",

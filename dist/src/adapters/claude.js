@@ -3,10 +3,10 @@ import { features, rewrite } from '../core/policy.js';
 import { classify } from '../core/classifier.js';
 const uid = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
 let warned = false;
+/** The last folder of a project path, with / or \ separators (Windows paths use \). Only this name is stored, never the full path. */
+export function folderName(root) { const n = typeof root === 'string' ? root.split(/[\\/]+/).filter(Boolean).pop() : undefined; return n ? n.replace(/[^a-zA-Z0-9:._-]/g, '_').slice(0, 80) : undefined; }
 async function projectName($) { try {
-    const r = await $.session.root();
-    const n = typeof r === 'string' ? r.split('/').filter(Boolean).pop() : undefined;
-    return n ? n.replace(/[^a-zA-Z0-9:._-]/g, '_').slice(0, 80) : undefined;
+    return folderName(await $.session.root());
 }
 catch {
     return undefined;
@@ -15,12 +15,15 @@ function warn($, message) { if (!warned) {
     warned = true;
     $.ui.log(`Autoroute: ${message} Claude keeps using your own model and effort.`);
 } }
-/** The service's data folder: AUTOROUTE_DATA_DIR, else ~/.autoroute (USERPROFILE on Windows). */
+/** The service's data folder: AUTOROUTE_DATA_DIR, else ~/.autoroute. On Windows the home is USERPROFILE even when HOME is set (Git Bash, MSYS), because that is what Node's os.homedir(), and so the service, uses. */
 async function dataDir($) {
     const custom = await $.env.get('AUTOROUTE_DATA_DIR');
     if (custom)
         return custom.replace(/[\\/]+$/, '');
-    const home = (await $.env.get('HOME')) || (await $.env.get('USERPROFILE'));
+    const windows = (await $.env.get('OS')) === 'Windows_NT';
+    // Each variable is named literally: the host lists the variables a plugin reads from its source.
+    const profile = await $.env.get('USERPROFILE'), posixHome = await $.env.get('HOME');
+    const home = windows ? (profile || posixHome) : (posixHome || profile);
     if (!home)
         throw new Error('no home folder');
     return home.replace(/[\\/]+$/, '') + '/.autoroute';

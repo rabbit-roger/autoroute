@@ -101,7 +101,8 @@ ${vars ? `<key>EnvironmentVariables</key><dict>${vars}</dict>` : ''}
         else if (os === 'win32') {
             const q = (s) => s.replaceAll('"', '""');
             const vars = Object.entries(env()).map(([k, v]) => `sh.Environment("Process")("${k}") = "${q(v)}"\r\n`).join('');
-            writeFileSync(file, `Set sh = CreateObject("WScript.Shell")\r\n${vars}sh.Run """${q(process.execPath)}"" ""${q(main)}"" serve", 0, False\r\n`);
+            // Windows Script Host reads a script without a BOM in the ANSI code page, which breaks non-ASCII paths (a Cyrillic user name, say). UTF-16 LE with a BOM is always read correctly.
+            writeFileSync(file, String.fromCharCode(0xfeff) + `Set sh = CreateObject("WScript.Shell")\r\n${vars}sh.Run """${q(process.execPath)}"" ""${q(main)}"" serve", 0, False\r\n`, 'utf16le');
         }
         else {
             const quote = (s) => `"${s.replaceAll('\\', '\\\\').replaceAll('"', '\\"')}"`;

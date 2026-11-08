@@ -18,12 +18,17 @@ type On = (name:string, handler:($:Bridge,e:any,next:Next)=>any)=>any;
 export type Client = (path:string, body?:unknown)=>Promise<any>;
 const uid=()=>`${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
 let warned=false;
-async function projectName($:Bridge):Promise<string|undefined>{try{const r=await $.session.root!();const n=typeof r==='string'?r.split('/').filter(Boolean).pop():undefined;return n?n.replace(/[^a-zA-Z0-9:._-]/g,'_').slice(0,80):undefined;}catch{return undefined;}}
+/** The last folder of a project path, with / or \ separators (Windows paths use \). Only this name is stored, never the full path. */
+export function folderName(root:unknown):string|undefined{const n=typeof root==='string'?root.split(/[\\/]+/).filter(Boolean).pop():undefined;return n?n.replace(/[^a-zA-Z0-9:._-]/g,'_').slice(0,80):undefined;}
+async function projectName($:Bridge):Promise<string|undefined>{try{return folderName(await $.session.root!());}catch{return undefined;}}
 function warn($:Bridge,message:string){if(!warned){warned=true;$.ui.log(`Autoroute: ${message} Claude keeps using your own model and effort.`);}}
-/** The service's data folder: AUTOROUTE_DATA_DIR, else ~/.autoroute (USERPROFILE on Windows). */
+/** The service's data folder: AUTOROUTE_DATA_DIR, else ~/.autoroute. On Windows the home is USERPROFILE even when HOME is set (Git Bash, MSYS), because that is what Node's os.homedir(), and so the service, uses. */
 async function dataDir($:Bridge):Promise<string>{
   const custom=await $.env.get('AUTOROUTE_DATA_DIR'); if(custom) return custom.replace(/[\\/]+$/,'');
-  const home=(await $.env.get('HOME'))||(await $.env.get('USERPROFILE')); if(!home) throw new Error('no home folder');
+  const windows=(await $.env.get('OS'))==='Windows_NT';
+  // Each variable is named literally: the host lists the variables a plugin reads from its source.
+  const profile=await $.env.get('USERPROFILE'), posixHome=await $.env.get('HOME');
+  const home=windows?(profile||posixHome):(posixHome||profile); if(!home) throw new Error('no home folder');
   return home.replace(/[\\/]+$/,'')+'/.autoroute';
 }
 /** Reads the address and key the running service wrote. Read again on every session start, so a new key is picked up. */

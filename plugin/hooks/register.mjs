@@ -90,11 +90,13 @@ ${text.slice(0, MAX_PROMPT_CHARS)}
 // src/adapters/claude.ts
 var uid = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
 var warned = false;
+function folderName(root) {
+  const n = typeof root === "string" ? root.split(/[\\/]+/).filter(Boolean).pop() : void 0;
+  return n ? n.replace(/[^a-zA-Z0-9:._-]/g, "_").slice(0, 80) : void 0;
+}
 async function projectName($) {
   try {
-    const r = await $.session.root();
-    const n = typeof r === "string" ? r.split("/").filter(Boolean).pop() : void 0;
-    return n ? n.replace(/[^a-zA-Z0-9:._-]/g, "_").slice(0, 80) : void 0;
+    return folderName(await $.session.root());
   } catch {
     return void 0;
   }
@@ -108,7 +110,9 @@ function warn($, message) {
 async function dataDir($) {
   const custom = await $.env.get("AUTOROUTE_DATA_DIR");
   if (custom) return custom.replace(/[\\/]+$/, "");
-  const home = await $.env.get("HOME") || await $.env.get("USERPROFILE");
+  const windows = await $.env.get("OS") === "Windows_NT";
+  const profile = await $.env.get("USERPROFILE"), posixHome = await $.env.get("HOME");
+  const home = windows ? profile || posixHome : posixHome || profile;
   if (!home) throw new Error("no home folder");
   return home.replace(/[\\/]+$/, "") + "/.autoroute";
 }

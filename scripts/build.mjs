@@ -1,7 +1,9 @@
 // Bundles the Claude Code plugin into one dependency-free module. The service itself is compiled by tsc.
 import { build } from 'esbuild';
+import { fileURLToPath } from 'node:url';
 await build({
-  stdin: { contents: "export { register } from './claude.ts';", resolveDir: new URL('../src/adapters/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), sourcefile: 'register.ts', loader: 'ts' },
+  // fileURLToPath handles Windows drive letters and decodes spaces and non-ASCII characters in the checkout path.
+  stdin: { contents: "export { register } from './claude.ts';", resolveDir: fileURLToPath(new URL('../src/adapters/', import.meta.url)), sourcefile: 'register.ts', loader: 'ts' },
   outfile: 'plugin/hooks/register.mjs',
   bundle: true,
   format: 'esm',

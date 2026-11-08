@@ -45,7 +45,7 @@ You need [Node.js](https://nodejs.org) 22.13 or newer and Claude Code 2.1.317 or
 **1. Install the service** (in a terminal):
 
 ```bash
-npm install -g github:rabbit-roger/autoroute
+npm install -g https://github.com/rabbit-roger/autoroute/archive/refs/heads/main.tar.gz
 ```
 
 ```bash
@@ -110,6 +110,18 @@ autoroute uninstall [--purge]      remove the login item; --purge also deletes ~
 ```
 
 Environment variables: `AUTOROUTE_DATA_DIR` (default `~/.autoroute`) and `AUTOROUTE_PORT` (default `43821`). If you change the data folder, set the same variable for Claude Code so the plugin finds it.
+
+## Update
+
+Run the install command again, then `autoroute setup` to restart the service with the new version. Your history is kept. Claude Code updates the plugin from the marketplace (or run `/plugin` to update it now).
+
+```bash
+npm install -g https://github.com/rabbit-roger/autoroute/archive/refs/heads/main.tar.gz
+```
+
+```bash
+autoroute setup
+```
 
 ## Privacy
 
